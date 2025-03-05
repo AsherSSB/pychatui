@@ -50,7 +50,7 @@ def receive_messages(client_socket):
             message_length = int(message_header.decode('utf-8').strip())
             message = client_socket.recv(message_length).decode('utf-8')
 
-            print(f'\n{username} > {message}')
+            print(f'{username} > {message}')
         except:
             if running:
                 print("Lost connection to server")
