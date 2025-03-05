@@ -50,7 +50,7 @@ def receive_messages(client_socket):
             message_length = int(message_header.decode('utf-8').strip())
             message = client_socket.recv(message_length).decode('utf-8')
 
-            print(f'{username} > {message}')
+            print(f'\n{username} > {message}')
         except:
             if running:
                 print("Lost connection to server")
@@ -101,7 +101,7 @@ def main():
     except:
         print("Could not establish connection to server.")
         sys.exit(0)
-
+    
     username = my_username.encode('utf-8')
     username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
     client_socket.send(username_header + username)
