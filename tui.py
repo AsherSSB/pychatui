@@ -7,6 +7,11 @@ import sys
 import signal
 from os import system, name
 
+HEADER_LENGTH = 10
+IP = "127.0.0.1"
+PORT = 1234
+
+
 class InputBox(Input):
     def __init__(self):
         super().__init__(placeholder="type here")
@@ -66,6 +71,14 @@ class RoomCreation(Container):
         self.input = InputBox()
         yield VerticalGroup(self.label, self.input, id="room-creation")
 
+
+class UsernameSelection(Container):
+    def compose(self):
+        self.label = Label("Name your room")
+        self.input = InputBox()
+        yield VerticalGroup(self.label, self.input, id="room-creation")
+
+
 class ChatApp(App):
     CSS_PATH = "chat.tcss"
     BINDINGS = [
@@ -84,13 +97,6 @@ class ChatApp(App):
 if __name__ == "__main__":
     app = ChatApp()
     app.run()
-
-#HEADER_LENGTH = 10
-#IP = "127.0.0.1"
-#PORT = 1234
-#
-#running = True
-#
 
 #def take_input(client_socket, my_username):
 #    global running
