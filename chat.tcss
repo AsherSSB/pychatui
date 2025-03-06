@@ -1,0 +1,6 @@
+#user-list {
+    height: 80vh;
+}
+#controls {
+    width: 20vw;
+}

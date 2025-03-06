@@ -8,6 +8,16 @@ class InputBox(Input):
         super().__init__(placeholder="type here")
 
 
+class Controls(VerticalGroup):
+    def __init__(self):
+        super().__init__(id="controls")
+        self.user_list = VerticalGroup(id="user-list")
+        self.back_button = Button(label="Back", variant="error", id="back")
+
+    def compose(self):
+        yield self.user_list
+        yield self.back_button
+
 class MessageGroup(VerticalGroup):
     def __init__(self):
         super().__init__(id="message-group")
@@ -27,14 +37,17 @@ class MessageGroup(VerticalGroup):
 
 
 class ChatApp(App):
+    CSS_PATH = "chat.tcss"
     BINDINGS = [
-                ("ctrl+d", "toggle_theme", "Toggle Theme"),
-                ("ctrl+c", "quit", "quit"),
-            ]
+        ("ctrl+d", "toggle_theme", "Toggle Theme"),
+        ("ctrl+c", "quit", "quit"),
+    ]
+    state = "chatting"
 
     def compose(self):
         self.message_group = MessageGroup()
-        yield self.message_group
+        self.controls = Controls()
+        yield HorizontalGroup(self.controls, self.message_group, id="main_group")
         yield Header()
         yield Footer()
 
