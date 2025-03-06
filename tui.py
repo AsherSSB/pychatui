@@ -1,6 +1,6 @@
 from textual.app import App
 from textual.widgets import Header, Footer, Button, Input, Label
-from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll
+from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll, Container
 
 
 class InputBox(Input):
@@ -36,6 +36,15 @@ class MessageGroup(VerticalGroup):
         self.messages.scroll_end(animate=False)
 
 
+class ChatRoom(Container):
+    def compose(self):
+        self.message_group = MessageGroup()
+        self.controls = Controls()
+        yield HorizontalGroup(self.controls, self.message_group, id="main_group")
+        yield Header()
+        yield Footer()
+
+
 class ChatApp(App):
     CSS_PATH = "chat.tcss"
     BINDINGS = [
@@ -45,11 +54,8 @@ class ChatApp(App):
     state = "chatting"
 
     def compose(self):
-        self.message_group = MessageGroup()
-        self.controls = Controls()
-        yield HorizontalGroup(self.controls, self.message_group, id="main_group")
-        yield Header()
-        yield Footer()
+        self.chatroom = ChatRoom()
+        yield self.chatroom 
 
     def action_toggle_theme(self):
         self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light" 
