@@ -18,6 +18,7 @@ class Controls(VerticalGroup):
         yield self.user_list
         yield self.back_button
 
+
 class MessageGroup(VerticalGroup):
     def __init__(self):
         super().__init__(id="message-group")
@@ -45,14 +46,7 @@ class ChatRoom(Container):
         yield Footer()
 
 
-class ChatApp(App):
-    CSS_PATH = "chat.tcss"
-    BINDINGS = [
-        ("ctrl+d", "toggle_theme", "Toggle Theme"),
-        ("ctrl+c", "quit", "quit"),
-    ]
-    state = "chatting"
-
+class RoomList(Container):
     def compose(self):
         self.room_list = VerticalScroll(id="room-list")
         self.back_button = Button(label="Back", variant="error")
@@ -62,8 +56,20 @@ class ChatApp(App):
         yield HorizontalGroup(self.back_button, InputBox(), id="room-select-controls")
 
 
+class ChatApp(App):
+    CSS_PATH = "chat.tcss"
+    BINDINGS = [
+        ("ctrl+d", "toggle_theme", "Toggle Theme"),
+        ("ctrl+c", "quit", "quit"),
+    ]
+    state = "chatting"
+
+    def compose(self):
+        yield RoomList()
+
     def action_toggle_theme(self):
         self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light" 
+
 
 if __name__ == "__main__":
     app = ChatApp()
