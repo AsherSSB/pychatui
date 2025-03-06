@@ -56,6 +56,12 @@ class RoomList(Container):
         yield HorizontalGroup(self.back_button, InputBox(), id="room-select-controls")
 
 
+class RoomCreation(Container): 
+    def compose(self):
+        self.label = Label("Name your room")
+        self.input = InputBox()
+        yield VerticalGroup(self.label, self.input, id="room-creation")
+
 class ChatApp(App):
     CSS_PATH = "chat.tcss"
     BINDINGS = [
@@ -65,7 +71,7 @@ class ChatApp(App):
     state = "chatting"
 
     def compose(self):
-        yield RoomList()
+        yield RoomCreation()
 
     def action_toggle_theme(self):
         self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light" 
