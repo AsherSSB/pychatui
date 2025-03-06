@@ -4,3 +4,10 @@
 #controls {
     width: 20vw;
 }
+#room-list {
+    height: 85vh;
+}
+#room-select-controls InputBox {
+    width: 85vw;
+    align: right middle;
+}

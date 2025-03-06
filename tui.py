@@ -54,8 +54,13 @@ class ChatApp(App):
     state = "chatting"
 
     def compose(self):
-        self.chatroom = ChatRoom()
-        yield self.chatroom 
+        self.room_list = VerticalScroll(id="room-list")
+        self.back_button = Button(label="Back", variant="error")
+        yield Header()
+        yield Footer()
+        yield self.room_list
+        yield HorizontalGroup(self.back_button, InputBox(), id="room-select-controls")
+
 
     def action_toggle_theme(self):
         self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light" 
