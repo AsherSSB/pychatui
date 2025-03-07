@@ -88,6 +88,10 @@ class ServerConnect(Screen):
             id="server-group"
         )
 
+    def on_button_pressed(self, event):
+        if event.button.id == "server-submit":
+            self.app.push_screen("username_select")
+
 
 class ChatApp(App):
     CSS_PATH = "chat.tcss"
@@ -100,18 +104,11 @@ class ChatApp(App):
         "username_select": UsernameSelection,
     }
 
-    def __init__(self):
-        super().__init__()
-
     def on_mount(self):
         self.push_screen("server_connect")
 
     def action_toggle_theme(self):
         self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light" 
-
-    def on_button_pressed(self, event):
-        if event.button.id == "server-submit":
-            self.push_screen("username_select")
 
 
 if __name__ == "__main__":
