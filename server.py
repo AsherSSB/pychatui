@@ -108,14 +108,17 @@ while True:
                 print(f'Closed connection from: {clients[notified_socket]["data"]}')
                 message = "CLOSING".encode('utf-8')
                 message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
-                notified_socket.send(message_header + message)
-                # Update room count when user disconnects
+                try:
+                    notified_socket.send(message_header + message)
+                except:
+                    print("TUI user exited")  # ctrl+q out of tui closes pipe and causes server exception
+                # update room count when user disconnects
                 user = clients[notified_socket]
                 if 'room' in user:
                     for room in rooms:
                         if room['id'] == int(user['room']):
                             room['count'] -= 1
-                            # Remove room if empty
+                            # remove room if empty
                             if room['count'] == 0:
                                 rooms.remove(room)
                                 roomids.remove(room['id'])
