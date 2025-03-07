@@ -54,6 +54,11 @@ ServerConnect VerticalGroup{
 }
 
 ServerConnect InputBox{
-    align-horizontal: right;
     width: 60vw;
+}
+
+ServerConnect VerticalGroup Button {
+    width: 59vw;
+    margin: 1;
+    align-horizontal: right;
 }

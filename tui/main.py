@@ -1,6 +1,7 @@
 from textual.app import App
 from textual.widgets import Header, Footer, Button, Input, Label
 from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll, Container, Right, Middle
+from textual.reactive import reactive
 from wiring import TuiWiring
 
 tw = None
@@ -78,13 +79,27 @@ class ServerConnect(Container):
         self.portinput = Right(InputBox("Server Port"))
         self.ipgroup = HorizontalGroup(Label("Server IP"), self.ipinput, id="ip-group") 
         self.portgroup = HorizontalGroup(Label("Server Port"), self.portinput, id="port-group") 
-        yield VerticalGroup(Label("Server Connect", id="server-connect-label"), self.ipgroup, self.portgroup, id="server-group")
+        yield VerticalGroup(
+            Label("Server Connect", id="server-connect-label"),
+            self.ipgroup,
+            self.portgroup,
+            Right(Button(label="submit")),
+            id="server-group"
+        )
 
 
 class ChatApp(App):
+    CSS_PATH = "chat.tcss"
+    BINDINGS = [
+        ("ctrl+d", "toggle_theme", "Toggle Theme"),
+        ("ctrl+c", "quit", "quit"),
+        ("f", "change_state", "state"),
+    ]
+
+    current_state = reactive("server_select", init=True)
+
     def __init__(self):
         super().__init__()
-        self.current_state = "server_select"
         self.state_map = {
             "server_select": ServerConnect,
             "username_select": UsernameSelection,
@@ -93,17 +108,17 @@ class ChatApp(App):
             "chat_room": ChatRoom,
         }
 
-    CSS_PATH = "chat.tcss"
-    BINDINGS = [
-        ("ctrl+d", "toggle_theme", "Toggle Theme"),
-        ("ctrl+c", "quit", "quit"),
-    ]
-        
-    def compose(self):
-        yield self.state_map[self.current_state]()
-
     def action_toggle_theme(self):
         self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light" 
+
+    def action_change_state(self):
+        self.current_state = "username_select"
+
+    def watch_current_state(self):
+        for child in self.children:
+            if isinstance(child, Container):
+                child.remove()
+        self.mount(self.state_map[self.current_state]())
 
 
 if __name__ == "__main__":
