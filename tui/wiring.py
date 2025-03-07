@@ -51,3 +51,4 @@ class TuiWiring():
         message_header = self.client_socket.recv(HEADER_LENGTH)
         message_length = int(message_header.decode('utf-8').strip())
         return self.client_socket.recv(message_length).decode('utf-8')
+
