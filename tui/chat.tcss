@@ -14,10 +14,12 @@
     width: 85vw;
     align: right middle;
 }
+
 #room-creation {
     height: 100vh;
     align: center middle;
 }
+
 #room-creation Label {
     width: 100vw;
     text-align: center;
