@@ -1,4 +1,5 @@
 from textual.app import App
+from textual.screen import Screen
 from textual.widgets import Header, Footer, Button, Input, Label
 from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll, Container, Right, Middle
 from textual.reactive import reactive
@@ -40,7 +41,7 @@ class MessageGroup(VerticalGroup):
         self.messages.scroll_end(animate=False)
 
 
-class ChatRoom(Container):
+class ChatRoom(Screen):
     def compose(self):
         self.message_group = MessageGroup()
         self.controls = Controls()
@@ -49,7 +50,7 @@ class ChatRoom(Container):
         yield Footer()
 
 
-class RoomList(Container):
+class RoomList(Screen):
     def compose(self):
         self.room_list = VerticalScroll(id="room-list")
         self.back_button = Button(label="Back", variant="error")
@@ -59,21 +60,21 @@ class RoomList(Container):
         yield HorizontalGroup(self.back_button, InputBox("type here"), id="room-select-controls")
 
 
-class RoomCreation(Container): 
+class RoomCreation(Screen): 
     def compose(self):
         self.label = Label("Name your room")
         self.input = InputBox("type here")
         yield VerticalGroup(self.label, self.input, id="room-creation")
 
 
-class UsernameSelection(Container):
+class UsernameSelection(Screen):
     def compose(self):
         self.label = Label("Type your username")
         self.input = InputBox("type here")
         yield VerticalGroup(self.label, self.input, id="room-creation")
 
 
-class ServerConnect(Container):
+class ServerConnect(Screen):
     def compose(self):
         self.ipinput = Right(InputBox("Server IP"))
         self.portinput = Right(InputBox("Server Port"))
@@ -83,7 +84,7 @@ class ServerConnect(Container):
             Label("Server Connect", id="server-connect-label"),
             self.ipgroup,
             self.portgroup,
-            Right(Button(label="submit")),
+            Right(Button(label="submit", id="server-submit")),
             id="server-group"
         )
 
@@ -93,7 +94,6 @@ class ChatApp(App):
     BINDINGS = [
         ("ctrl+d", "toggle_theme", "Toggle Theme"),
         ("ctrl+c", "quit", "quit"),
-        ("f", "change_state", "state"),
     ]
 
     current_state = reactive("server_select", init=True)
@@ -111,14 +111,10 @@ class ChatApp(App):
     def action_toggle_theme(self):
         self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light" 
 
-    def action_change_state(self):
-        self.current_state = "username_select"
-
-    def watch_current_state(self):
-        for child in self.children:
-            if isinstance(child, Container):
-                child.remove()
-        self.mount(self.state_map[self.current_state]())
+    def on_button_pressed(self, event):
+        if event.button.id == "server-submit":
+            print("Button pressed")  # Debug
+            self.current_state = "username_select"
 
 
 if __name__ == "__main__":
