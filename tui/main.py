@@ -1,3 +1,4 @@
+from textual import on
 from textual.app import App
 from textual.screen import Screen
 from textual.widgets import Header, Footer, Button, Input, Label
@@ -5,7 +6,6 @@ from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll, C
 from textual.reactive import reactive
 from wiring import TuiWiring
 
-tw = None
 
 class InputBox(Input):
     def __init__(self, placeholder, id=None):
@@ -73,6 +73,14 @@ class UsernameSelection(Screen):
         self.input = InputBox("type here")
         yield VerticalGroup(self.label, self.input, id="room-creation")
 
+    @on(Input.Submitted)
+    def handle_username_submission(self):
+        try:
+            self.app.tw.set_username(self.input.value)
+            self.app.push_screen("room_list")
+        except Exception as e:
+            print(e)
+
 
 class ServerConnect(Screen):
     def compose(self):
@@ -93,11 +101,10 @@ class ServerConnect(Screen):
             ip = str(self.query_one("#ip-input").value)
             port = int(self.query_one("#port-input").value)
             print(ip, port)
-            global tw 
-            tw = TuiWiring(ip, port)
+            self.app.tw = TuiWiring(ip, port)
             self.app.push_screen("username_select")
         except:
-            self.query_one("VerticalGroup").mount(Label("Could not establish connection"))
+            print("lolno bad connection")
 
 
 class ChatApp(App):
@@ -109,6 +116,7 @@ class ChatApp(App):
     SCREENS = {
         "server_connect": ServerConnect,
         "username_select": UsernameSelection,
+        "room_list": RoomList,
     }
 
     def on_mount(self):
