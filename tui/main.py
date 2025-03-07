@@ -95,26 +95,23 @@ class ChatApp(App):
         ("ctrl+d", "toggle_theme", "Toggle Theme"),
         ("ctrl+c", "quit", "quit"),
     ]
-
-    current_state = reactive("server_select", init=True)
+    SCREENS = {
+        "server_connect": ServerConnect,
+        "username_select": UsernameSelection,
+    }
 
     def __init__(self):
         super().__init__()
-        self.state_map = {
-            "server_select": ServerConnect,
-            "username_select": UsernameSelection,
-            "room_select": RoomList,
-            "room_creation": RoomCreation,
-            "chat_room": ChatRoom,
-        }
+
+    def on_mount(self):
+        self.push_screen("server_connect")
 
     def action_toggle_theme(self):
         self.theme = "textual-dark" if self.theme == "textual-light" else "textual-light" 
 
     def on_button_pressed(self, event):
         if event.button.id == "server-submit":
-            print("Button pressed")  # Debug
-            self.current_state = "username_select"
+            self.push_screen("username_select")
 
 
 if __name__ == "__main__":
