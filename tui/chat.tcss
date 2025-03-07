@@ -1,0 +1,59 @@
+#user-list {
+    height: 80vh;
+}
+
+#controls {
+    width: 20vw;
+}
+
+#room-list {
+    height: 85vh;
+}
+
+#room-select-controls InputBox {
+    width: 85vw;
+    align: right middle;
+}
+
+#room-creation {
+    height: 100vh;
+    align: center middle;
+}
+
+#room-creation Label {
+    width: 100vw;
+    text-align: center;
+    align: center middle;
+}
+
+#room-creation InputBox {
+    text-align: center;
+}
+
+#server-connect-label {
+    width: 100%;
+    text-align: center;
+    align-vertical: middle;
+    padding: 1;
+}
+
+ServerConnect HorizontalGroup Label {
+    height: 100%;
+    text-align: center;
+    content-align: center middle;
+}
+
+ServerConnect {
+    align: center middle;
+    height: 100vh;
+    width: 100vw;
+}
+
+ServerConnect VerticalGroup{
+    width: 75vw;
+}
+
+ServerConnect InputBox{
+    align-horizontal: right;
+    width: 60vw;
+}
