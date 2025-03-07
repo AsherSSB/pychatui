@@ -1,13 +1,11 @@
 import socket
 
 HEADER_LENGTH = 10
-IP = "127.0.0.1"
-PORT = 1234
 
 class TuiWiring():
-    def __init__(self):
+    def __init__(self, ip, port):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect((IP, PORT))
+        self.client_socket.connect((ip, port))
         self.username:str
 
     def set_username(self, username):

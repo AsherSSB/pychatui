@@ -8,8 +8,8 @@ from wiring import TuiWiring
 tw = None
 
 class InputBox(Input):
-    def __init__(self, placeholder):
-        super().__init__(placeholder=placeholder)
+    def __init__(self, placeholder, id=None):
+        super().__init__(placeholder=placeholder, id=id)
 
 
 class Controls(VerticalGroup):
@@ -76,8 +76,8 @@ class UsernameSelection(Screen):
 
 class ServerConnect(Screen):
     def compose(self):
-        self.ipinput = Right(InputBox("Server IP"))
-        self.portinput = Right(InputBox("Server Port"))
+        self.ipinput = Right(InputBox("Server IP", id="ip-input"))
+        self.portinput = Right(InputBox("Server Port", id="port-input"))
         self.ipgroup = HorizontalGroup(Label("Server IP"), self.ipinput, id="ip-group") 
         self.portgroup = HorizontalGroup(Label("Server Port"), self.portinput, id="port-group") 
         yield VerticalGroup(
@@ -89,8 +89,15 @@ class ServerConnect(Screen):
         )
 
     def on_button_pressed(self, event):
-        if event.button.id == "server-submit":
+        try:
+            ip = str(self.query_one("#ip-input").value)
+            port = int(self.query_one("#port-input").value)
+            print(ip, port)
+            global tw 
+            tw = TuiWiring(ip, port)
             self.app.push_screen("username_select")
+        except:
+            self.query_one("VerticalGroup").mount(Label("Could not establish connection"))
 
 
 class ChatApp(App):
