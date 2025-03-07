@@ -9,13 +9,10 @@ class TuiWiring():
         self.username:str
 
     def set_username(self, username):
-        self.username = username.encode('utf-8')
+        self.username = username
+        username = username.encode('utf-8')
         username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
-        try:
-            client_socket.send(username_header + username)
-            return True
-        except:
-            return False
+        self.client_socket.send(username_header + username)
 
     def receive_server_message(self):
         message_header = self.client_socket.recv(HEADER_LENGTH)

@@ -10,11 +10,6 @@
     height: 85vh;
 }
 
-#room-select-controls InputBox {
-    width: 85vw;
-    align: right middle;
-}
-
 #room-creation {
     height: 100vh;
     align: center middle;

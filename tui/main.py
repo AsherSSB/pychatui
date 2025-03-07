@@ -51,13 +51,16 @@ class ChatRoom(Screen):
 
 
 class RoomList(Screen):
+    BINDINGS = [("n", "new_room", "Create New Room")]
     def compose(self):
         self.room_list = VerticalScroll(id="room-list")
         self.back_button = Button(label="Back", variant="error")
         yield Header()
         yield Footer()
         yield self.room_list
-        yield HorizontalGroup(self.back_button, InputBox("type here"), id="room-select-controls")
+
+    def action_new_room(self):
+        self.app.push_screen("room_creation")
 
 
 class RoomCreation(Screen): 
@@ -117,6 +120,7 @@ class ChatApp(App):
         "server_connect": ServerConnect,
         "username_select": UsernameSelection,
         "room_list": RoomList,
+        "room_creation": RoomCreation,
     }
 
     def on_mount(self):
