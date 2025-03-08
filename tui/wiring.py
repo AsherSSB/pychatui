@@ -1,4 +1,5 @@
 import socket
+import asyncio
 
 HEADER_LENGTH = 10
 
@@ -29,7 +30,11 @@ class TuiWiring():
         except:
             return False
 
-    def recieve_user_message(self):
+    async def receive_user_message(self):
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, self._blocking_receive_user_message)
+
+    def _blocking_receive_user_message(self):
         username_header = self.client_socket.recv(HEADER_LENGTH)
 
         if not len(username_header):
@@ -45,4 +50,5 @@ class TuiWiring():
 
         message_header = self.client_socket.recv(HEADER_LENGTH)
         message_length = int(message_header.decode('utf-8').strip())
-        return self.client_socket.recv(message_length).decode('utf-8')
+        message = self.client_socket.recv(message_length).decode('utf-8')
+        return username, message

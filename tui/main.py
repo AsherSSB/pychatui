@@ -1,4 +1,4 @@
-from textual import on
+from textual import on, work
 from textual.app import App
 from textual.screen import Screen
 from textual.widgets import Header, Footer, Button, Input, Label, ListItem, ListView
@@ -23,11 +23,29 @@ class Controls(VerticalGroup):
         yield self.back_button
 
 
+class MessagesBox(VerticalScroll):
+    def __init__(self):
+        super().__init__()
+        self.receive_messages()
+
+    @work
+    async def receive_messages(self):
+        while True:
+            try:
+                username, message = await self.app.tw.receive_user_message()
+                if username:
+                    self.mount(Label(f"{username} >> {message}"))
+                    self.scroll_end(animate=False)
+            except:
+                # disconnected
+                break
+
+
 class MessageGroup(VerticalGroup):
     def __init__(self):
         super().__init__(id="message-group")
         self.channel = Label("Room 1")
-        self.messages = VerticalScroll()
+        self.messages = MessagesBox()
         self.input = InputBox("type here")
 
     def compose(self):
@@ -36,7 +54,8 @@ class MessageGroup(VerticalGroup):
         yield self.input
 
     def on_input_submitted(self, event):
-        self.messages.mount(Label(event.value))
+        self.messages.mount(Label(f"{self.app.username} >> {event.value}"))
+        self.app.tw.send_message(event.value)
         self.input.value = ""
         self.messages.scroll_end(animate=False)
 
@@ -72,12 +91,12 @@ class RoomList(Screen):
             self.query_one("ListView").mount(ListItem(Label(option)))
 
     def on_list_view_selected(self, event):
-        print("hewwo")
         choice = event.list_view.index - 1  # -1 since create new is -1
         self.app.tw.send_message(str(choice))
         if choice == -1:
             self.app.push_screen("room_creation")
         else:
+            self.app.tw.receive_server_message()  # clear buffer
             self.app.push_screen("chat_room")
 
 
@@ -107,6 +126,7 @@ class UsernameSelection(Screen):
     def handle_username_submission(self):
         try:
             self.app.tw.set_username(self.input.value)
+            self.app.username = self.input.value
             self.app.push_screen("room_list")
         except Exception as e:
             print(e)
