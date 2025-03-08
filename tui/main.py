@@ -51,13 +51,13 @@ class ChatRoom(Screen):
 
 
 class RoomList(Screen):
-    BINDINGS = [("n", "new_room", "Create New Room")]
     def compose(self):
         self.back_button = Button(label="Back", variant="error")
         yield Header()
-        yield VerticalScroll()
+        yield ListView()
         yield Footer()
 
+    # this WILL be bugged if server changes rooms
     def on_show(self):
         server_message = self.app.tw.receive_server_message()
         index = server_message.find("\n")
@@ -68,14 +68,14 @@ class RoomList(Screen):
             index = option.find(" ")
             self.options[i] = option[index+1:]
         print(self.options)
-        self.option_set = set()
-        for i, option in enumerate(self.options, -1):
-            self.query_one("VerticalScroll").mount(Label(option))
-            self.option_set.add(i)
-        print(self.option_set)
+        for option in self.options:
+            self.query_one("ListView").mount(ListItem(Label(option)))
 
-    def action_new_room(self):
-        self.app.push_screen("room_creation")
+    def on_list_view_selected(self, event):
+        print("hewwo")
+        choice = event.list_view.index - 1  # -1 since create new is -1
+        if choice == -1:
+            self.app.push_screen("room_creation")
 
 
 class RoomCreation(Screen): 
