@@ -68,7 +68,6 @@ def handle_user_state(client_socket):
     input_thread.daemon = True
     input_thread.start()
     server_message = receive_server_message(client_socket)
-    # around here using CLOSE causes hang
     while server_message != "200":
         if server_message == "CLOSING":
             print("Closing connection.")

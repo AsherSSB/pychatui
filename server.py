@@ -127,11 +127,26 @@ while True:
                 del clients[notified_socket]
                 continue
 
-            if clients[notified_socket]["state"] == "selecting_room":
+            client_state = clients[notified_socket]["state"]
+
+            if message["data"] == "BACK":
+                if client_state == "selecting_room":
+                    print(f'Closed connection from: {clients[notified_socket]["data"]}')
+                    message = "CLOSING".encode('utf-8')
+                    message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
+                    notified_socket.send(message_header + message)
+                    sockets_list.remove(notified_socket)
+                    del clients[notified_socket]
+                elif client_state == "creating_room" or client_state == "chatting":
+                    client_state = "selecting_room"
+                    handle_room_selection(notified_socket, message["data"])
+                continue
+
+            if client_state == "selecting_room":
                 handle_room_selection(notified_socket, message["data"])
-            elif clients[notified_socket]["state"] == "creating_room":
+            elif client_state == "creating_room":
                 handle_room_creation(notified_socket, message["data"])
-            elif clients[notified_socket]["state"] == "chatting":
+            elif client_state == "chatting":
                 user = clients[notified_socket]
                 for client_socket in clients:
                     if (client_socket != notified_socket and  # if statement from hell
