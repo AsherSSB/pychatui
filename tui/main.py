@@ -74,8 +74,11 @@ class RoomList(Screen):
     def on_list_view_selected(self, event):
         print("hewwo")
         choice = event.list_view.index - 1  # -1 since create new is -1
+        self.app.tw.send_message(str(choice))
         if choice == -1:
             self.app.push_screen("room_creation")
+        else:
+            self.app.push_screen("chat_room")
 
 
 class RoomCreation(Screen): 
@@ -84,9 +87,14 @@ class RoomCreation(Screen):
         self.input = InputBox("type here")
         yield VerticalGroup(self.label, self.input, id="room-creation")
 
+    def on_show(self):
+        self.app.tw.receive_server_message()  # recieving room creation msg
+
     @on(Input.Submitted)
-    def handle_input_sumbission():
-        pass
+    def handle_input_sumbission(self):
+        name = self.query_one("InputBox").value
+        self.app.tw.send_message(name)
+        self.app.push_screen("chat_room")
 
 
 class UsernameSelection(Screen):
@@ -140,6 +148,7 @@ class ChatApp(App):
         "username_select": UsernameSelection,
         "room_list": RoomList,
         "room_creation": RoomCreation,
+        "chat_room": ChatRoom,
     }
 
     def on_mount(self):
