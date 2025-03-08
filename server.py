@@ -39,7 +39,7 @@ def handle_new_connection(client_socket):
     if user is False:
         return False
     user['state'] = "selecting_room"
-    message = "Select a room by typing the corresponding number, or type '-1' to create a new room:\n"
+    message = "Select a room by typing the corresponding number:\n-1. New Room\n"
     for room in rooms:
         message += f"{room['id']}. {room['name']}, {room['count']} Users\n"
     message = message.encode('utf-8')
@@ -49,7 +49,7 @@ def handle_new_connection(client_socket):
 
 def handle_room_selection(client_socket, selection):
     if not selection.isdigit() and selection != '-1':
-        message = "Select a room by typing the corresponding number, or type '-1' to create a new room:\n"
+        message = "Select a room by typing the corresponding number:\n-1. New Room\n"
         for room in rooms:
             message += f"{room['id']}. {room['name']}, {room['count']} Users\n"
         message_header = f"{len(message):<{HEADER_LENGTH}}".encode("utf-8")

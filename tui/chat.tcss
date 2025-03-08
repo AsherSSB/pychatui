@@ -6,8 +6,14 @@
     width: 20vw;
 }
 
-#room-list {
-    height: 85vh;
+RoomList {
+    height: 100vh;
+    background: red;
+}
+
+RoomList InputBox {
+    align: center bottom;
+    background: green;
 }
 
 #room-creation {

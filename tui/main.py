@@ -1,7 +1,7 @@
 from textual import on
 from textual.app import App
 from textual.screen import Screen
-from textual.widgets import Header, Footer, Button, Input, Label
+from textual.widgets import Header, Footer, Button, Input, Label, ListItem, ListView
 from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll, Container, Right, Middle
 from textual.reactive import reactive
 from wiring import TuiWiring
@@ -53,11 +53,26 @@ class ChatRoom(Screen):
 class RoomList(Screen):
     BINDINGS = [("n", "new_room", "Create New Room")]
     def compose(self):
-        self.room_list = VerticalScroll(id="room-list")
         self.back_button = Button(label="Back", variant="error")
         yield Header()
+        yield VerticalScroll()
         yield Footer()
-        yield self.room_list
+
+    def on_show(self):
+        server_message = self.app.tw.receive_server_message()
+        index = server_message.find("\n")
+        server_message = server_message[index+1:]        
+        self.options = server_message.split("\n")
+        self.options = self.options[:-1]  # removing empty string
+        for i, option in enumerate(self.options):  # remove numbers
+            index = option.find(" ")
+            self.options[i] = option[index+1:]
+        print(self.options)
+        self.option_set = set()
+        for i, option in enumerate(self.options, -1):
+            self.query_one("VerticalScroll").mount(Label(option))
+            self.option_set.add(i)
+        print(self.option_set)
 
     def action_new_room(self):
         self.app.push_screen("room_creation")
@@ -68,6 +83,10 @@ class RoomCreation(Screen):
         self.label = Label("Name your room")
         self.input = InputBox("type here")
         yield VerticalGroup(self.label, self.input, id="room-creation")
+
+    @on(Input.Submitted)
+    def handle_input_sumbission():
+        pass
 
 
 class UsernameSelection(Screen):
