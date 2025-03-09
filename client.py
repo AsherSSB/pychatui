@@ -17,7 +17,6 @@ def send_message():
     global last_input
     try:
         message = input(f'{my_username} > ')
-        print(message)
         last_input = message
         message = message.encode('utf-8')
         message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
@@ -44,7 +43,6 @@ def receive_chatroom_messages():
                 return
             username_length = int(username_header.decode('utf-8').strip())
             username = client_socket.recv(username_length).decode('utf-8')
-            print(username)
             if username == "CLOSING":
                 print('Closing connection.')
                 return 
@@ -69,10 +67,8 @@ def start_chatroom_loop():
 
 def receive_server_message():
     message_header = client_socket.recv(HEADER_LENGTH)
-    print(f"HLEN: {message_header}")
     message_length = int(message_header.decode('utf-8').strip())
     server_message = client_socket.recv(message_length).decode('utf-8')
-    print(f"MSG: {server_message}")
     return server_message
 
 def create_room():

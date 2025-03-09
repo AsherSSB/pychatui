@@ -143,6 +143,9 @@ while True:
                     del clients[notified_socket]
                 elif client_state == "selecting_room":
                     clients[notified_socket]["state"] = "setting_name"
+                    message = "BACK".encode('utf-8')
+                    message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
+                    notified_socket.send(message_header + message)
                 elif client_state == "creating_room":
                     clients[notified_socket]["state"] = "selecting_room"
                     handle_room_selection(notified_socket, message["data"])
