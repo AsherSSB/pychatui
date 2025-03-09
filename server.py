@@ -107,7 +107,9 @@ while True:
                 print(f'Accepted new connection from {client_address}')
         else:
             message = receive_message(notified_socket)
+            print(message["data"])
             if message is False or message["data"] == "CLOSE":
+                print(f'Closed connection from: {clients[notified_socket]["data"]}')
                 message = "CLOSING".encode('utf-8')
                 message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
                 try:
@@ -132,16 +134,30 @@ while True:
             client_state = clients[notified_socket]["state"]
 
             if message["data"] == "BACK":
-                if client_state == "selecting_room":
+                if client_state == "setting_name":
                     print(f'Closed connection from: {clients[notified_socket]["data"]}')
                     message = "CLOSING".encode('utf-8')
                     message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
                     notified_socket.send(message_header + message)
                     sockets_list.remove(notified_socket)
                     del clients[notified_socket]
-                elif client_state == "creating_room" or client_state == "chatting":
-                    client_state = "selecting_room"
+                elif client_state == "selecting_room":
+                    clients[notified_socket]["state"] = "setting_name"
+                elif client_state == "creating_room":
+                    clients[notified_socket]["state"] = "selecting_room"
                     handle_room_selection(notified_socket, message["data"])
+                elif client_state == "chatting":
+                    clients[notified_socket]["state"] = "selecting_room"
+                    message = "BACK".encode('utf-8')
+                    message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
+                    notified_socket.send(message_header + message)
+                    for room in rooms:
+                        if room['id'] == int(clients[notified_socket]['room']):
+                            room['count'] -= 1
+                            if room['count'] == 0:
+                                rooms.remove(room)
+                                roomids.remove(room['id'])
+                    handle_room_selection(notified_socket, "no")
                 continue
 
             if client_state == "setting_name":

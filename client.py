@@ -15,32 +15,38 @@ closing = False
 
 def send_message():
     global last_input
-    message = input(f'{my_username} > ')
-    last_input = message
-    message = message.encode('utf-8')
-    message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
     try:
+        message = input(f'{my_username} > ')
+        print(message)
+        last_input = message
+        message = message.encode('utf-8')
+        message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
         client_socket.send(message_header + message)
-    except:
+        
+        if message.decode('utf-8') == "CLOSE":
+            return False
+        return True
+    except ConnectionError as e:
+        print(f"Connection error: {e}")
         return False
-    if message.decode('utf-8') == "CLOSE":
+    except Exception as e:
+        print(f"Error sending message: {e}")
         return False
-    return True
 
 def receive_chatroom_messages():
-    global closing
-    while not closing:
+    while True:
         try:
             username_header = client_socket.recv(HEADER_LENGTH)
+            print(username_header)
             if not len(username_header):
                 print('Connection closed by the server')
                 closing = True
                 return
             username_length = int(username_header.decode('utf-8').strip())
             username = client_socket.recv(username_length).decode('utf-8')
-            if username == "CLOSING":  # very professional, what could go wrong
+            print(username)
+            if username == "CLOSING":
                 print('Closing connection.')
-                closing = True
                 return 
             if username == "BACK":
                 return
@@ -49,9 +55,6 @@ def receive_chatroom_messages():
             message = client_socket.recv(message_length).decode('utf-8')
             print(f'{username} > {message}')
         except:
-            if not closing:
-                print("Lost connection to server")
-            closing == True
             return
 
 def start_chatroom_loop():
@@ -61,12 +64,15 @@ def start_chatroom_loop():
         if not send_message():
             return False
         if last_input == "BACK":
+            receiving_thread.join()
             return True
 
 def receive_server_message():
     message_header = client_socket.recv(HEADER_LENGTH)
+    print(f"HLEN: {message_header}")
     message_length = int(message_header.decode('utf-8').strip())
     server_message = client_socket.recv(message_length).decode('utf-8')
+    print(f"MSG: {server_message}")
     return server_message
 
 def create_room():
@@ -74,52 +80,64 @@ def create_room():
     print("\n"+server_message)
     if not send_message():
         return False
+    if server_message == "CLOSING":
+        return False
     return True
 
-def select_room():
-    while True:
-        server_message = receive_server_message()
+def select_room(server_message):
+    running = True
+    while running:
         while server_message != "200":
-            if server_message == "CLOSING":
+            if not server_message or server_message == "CLOSING":
                 print("Closing connection.")
-                return
+                return False
             print("\n"+server_message) 
             if not send_message():
                 return False
             server_message = receive_server_message()
+            if last_input == "BACK":
+                return True
         if last_input == "-1":
             if not create_room():
                 return False
             if last_input == "BACK":
                 return True
-        if not start_chatroom_loop():
-            return False
-        if last_input == "BACK":
-            return True
+        running = start_chatroom_loop()
+        if running:
+            server_message = receive_server_message()
+    return False
 
 def set_username():
     global my_username
-    my_username = input("Username: ")
-    if my_username == "CLOSE": 
-        return False
-    if my_username == "BACK":
-        return True
-    username = my_username.encode('utf-8')
-    username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
-    client_socket.send(username_header + username)
-    select_room()
+    running = True
+    while running:
+        my_username = input("Username: ")
+        username = my_username.encode('utf-8')
+        username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
+        client_socket.send(username_header + username)
+        server_message = receive_server_message()
+        if server_message == "CLOSING": 
+            return False
+        if username == "BACK":
+            return True
+        running = select_room(server_message)
 
 def connect_to_server():
     global client_socket
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # TODO: allow user to enter server ip and port
-    try:
-        client_socket.connect((IP, PORT))
-        set_username()
-    except Exception as e:
-        print(e)
-        print("Could not establish connection to server.")
-        return
+    running = True
+    while running:
+        ip = input("Enter server IP address:")
+        if ip == "CLOSE": return
+        port = input("Enter server port:")
+        if port == "CLOSE": return
+        try:
+            client_socket.connect((ip, int(port)))
+        except Exception as e:
+            print(e)
+            print("Could not establish connection to server.")
+            continue 
+        running = set_username()
 
 def main():
     print("Type \"CLOSE\" at any point to exit")
