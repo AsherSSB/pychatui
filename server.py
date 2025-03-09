@@ -135,7 +135,7 @@ while True:
 
             if message["data"] == "BACK":
                 if client_state == "setting_name":
-                    print(f'Closed connection from: {clients[notified_socket]["data"]}')
+                    print(f'Closed connection from: {clients[notified_socket]}')
                     message = "CLOSING".encode('utf-8')
                     message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
                     notified_socket.send(message_header + message)

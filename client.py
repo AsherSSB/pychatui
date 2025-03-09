@@ -112,17 +112,17 @@ def set_username():
         username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
         client_socket.send(username_header + username)
         server_message = receive_server_message()
+        if username.decode('utf-8') == "BACK":
+            return True
         if server_message == "CLOSING": 
             return False
-        if username == "BACK":
-            return True
         running = select_room(server_message)
 
 def connect_to_server():
     global client_socket
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     running = True
     while running:
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         ip = input("Enter server IP address:")
         if ip == "CLOSE": return
         port = input("Enter server port:")
@@ -136,7 +136,7 @@ def connect_to_server():
         running = set_username()
 
 def main():
-    print("Type \"CLOSE\" at any point to exit")
+    print("Type \"CLOSE\" at any point to exit and \"BACK\" to go back")
     connect_to_server()
     sys.exit(0)
 
