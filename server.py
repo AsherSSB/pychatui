@@ -3,8 +3,8 @@ import select
 import threading
 
 HEADER_LENGTH = 10
-IP = "127.0.0.1"
-PORT = 1234
+IP = "0.0.0.0"
+PORT = 8181
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -107,7 +107,6 @@ while True:
                 print(f'Accepted new connection from {client_address}')
         else:
             message = receive_message(notified_socket)
-            print(message["data"])
             if message is False or message["data"] == "CLOSE":
                 print(f'Closed connection from: {clients[notified_socket]["data"]}')
                 message = "CLOSING".encode('utf-8')
