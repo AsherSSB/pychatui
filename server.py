@@ -35,17 +35,20 @@ def receive_message(client_socket):
         return False
 
 def handle_new_connection(client_socket):
-    user = receive_message(client_socket)
-    if user is False:
-        return False
-    user['state'] = "selecting_room"
+    user = {}
+    user['state'] = "setting_name"
+    return user
+
+def handle_name_set(client_socket, header_name_dict):
+    clients[client_socket]['data'] = header_name_dict['data']
+    clients[client_socket]['header'] = header_name_dict['header']
+    clients[client_socket]['state'] = "selecting_room"
     message = "Select a room by typing the corresponding number:\n-1. New Room\n"
     for room in rooms:
         message += f"{room['id']}. {room['name']}, {room['count']} Users\n"
     message = message.encode('utf-8')
     message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
     client_socket.send(message_header + message)
-    return user
 
 def handle_room_selection(client_socket, selection):
     if not selection.isdigit() and selection != '-1':
@@ -101,11 +104,10 @@ while True:
             if user:
                 sockets_list.append(client_socket)
                 clients[client_socket] = user
-                print(f'Accepted new connection from {client_address}, username: {user['data']}')
+                print(f'Accepted new connection from {client_address}')
         else:
             message = receive_message(notified_socket)
             if message is False or message["data"] == "CLOSE":
-                print(f'Closed connection from: {clients[notified_socket]["data"]}')
                 message = "CLOSING".encode('utf-8')
                 message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
                 try:
@@ -142,7 +144,9 @@ while True:
                     handle_room_selection(notified_socket, message["data"])
                 continue
 
-            if client_state == "selecting_room":
+            if client_state == "setting_name":
+                handle_name_set(notified_socket, message)
+            elif client_state == "selecting_room":
                 handle_room_selection(notified_socket, message["data"])
             elif client_state == "creating_room":
                 handle_room_creation(notified_socket, message["data"])
