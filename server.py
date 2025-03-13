@@ -1,6 +1,5 @@
 import socket
 import select
-import threading
 
 HEADER_LENGTH = 10
 IP = "0.0.0.0"

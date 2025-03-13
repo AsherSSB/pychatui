@@ -1,8 +1,6 @@
 import socket
 import threading
 import sys
-import signal
-from os import system, name
 
 HEADER_LENGTH = 10
 IP = "127.0.0.1"

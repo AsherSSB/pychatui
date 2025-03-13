@@ -2,8 +2,7 @@ from textual import on, work
 from textual.app import App
 from textual.screen import Screen
 from textual.widgets import Header, Footer, Button, Input, Label, ListItem, ListView
-from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll, Container, Right, Middle
-from textual.reactive import reactive
+from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll, Right
 from wiring import TuiWiring
 import sys
 
