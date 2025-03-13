@@ -6,6 +6,14 @@
     width: 20vw;
 }
 
+#user-back {
+    margin: 1;
+}
+
+#creation-back {
+    margin: 1;
+}
+
 RoomList {
     height: 100vh;
 }

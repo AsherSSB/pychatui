@@ -34,7 +34,6 @@ class MessagesBox(VerticalScroll):
         self.receive_messages()
 
     def clear_messages(self):
-        print("clearing")
         self.remove_children()
         self.refresh(layout=True)
 
@@ -117,9 +116,9 @@ class RoomList(Screen):
 class RoomCreation(Screen): 
     def compose(self):
         self.label = Label("Name your room")
-        self.back_button = Button(label="Back", variant="error")
+        self.back_button = Button(label="Back", variant="error", id="creation-back")
         self.input = InputBox("type here")
-        yield VerticalGroup(self.label, self.input, self.back_button,self.back_button, id="room-creation")
+        yield VerticalGroup(self.label, self.input, self.back_button, id="room-creation")
 
     def on_show(self):
         self.app.tw.receive_server_message()  # recieving room creation msg
@@ -139,7 +138,7 @@ class UsernameSelection(Screen):
     def compose(self):
         self.label = Label("Type your username")
         self.input = InputBox("type here")
-        self.back_button = Button(label="Back", variant="error")
+        self.back_button = Button(label="Back", variant="error", id="user-back")
         yield VerticalGroup(self.label, self.input, self.back_button, id="room-creation")
 
     @on(Input.Submitted)
@@ -173,12 +172,11 @@ class ServerConnect(Screen):
         try:
             ip = str(self.query_one("#ip-input").value)
             port = int(self.query_one("#port-input").value)
-            print(ip, port)
             self.app.connected = True
             self.app.tw = TuiWiring(ip, port)
             self.app.push_screen("username_select")
         except:
-            print("lolno bad connection")
+            print("bad connection")
 
 
 class ChatApp(App):
@@ -201,7 +199,6 @@ class ChatApp(App):
         self.connected = False
 
     def action_quit(self):
-        print(self.connected)
         if self.connected and self.tw in locals():
             self.tw.send_message("CLOSE")
         sys.exit(0)
