@@ -8,7 +8,6 @@
 
 RoomList {
     height: 100vh;
-    background: red;
 }
 
 RoomList InputBox {

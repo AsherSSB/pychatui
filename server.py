@@ -108,7 +108,7 @@ while True:
         else:
             message = receive_message(notified_socket)
             if message is False or message["data"] == "CLOSE":
-                print(f'Closed connection from: {clients[notified_socket]["data"]}')
+                print(f'Closed connection from: {clients[notified_socket]}')
                 message = "CLOSING".encode('utf-8')
                 message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
                 try:

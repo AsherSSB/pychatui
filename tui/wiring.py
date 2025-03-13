@@ -44,8 +44,7 @@ class TuiWiring():
         username_length = int(username_header.decode('utf-8').strip())
         username = self.client_socket.recv(username_length).decode('utf-8')
 
-        if username == "CLOSING":
-            print('Closing connection.')
+        if username == "CLOSING" or username == "BACK":
             return ""
 
         message_header = self.client_socket.recv(HEADER_LENGTH)
