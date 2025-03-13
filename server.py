@@ -114,7 +114,7 @@ while True:
                 try:
                     notified_socket.send(message_header + message)
                 except:
-                    print("TUI user exited")  # ctrl+q out of tui closes pipe and causes server exception
+                    print("user exited unexpectedly")  # ctrl+q out of tui closes pipe and causes server exception
                 # update room count when user disconnects
                 user = clients[notified_socket]
                 if 'room' in user:

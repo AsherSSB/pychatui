@@ -36,7 +36,6 @@ def receive_chatroom_messages():
     while True:
         try:
             username_header = client_socket.recv(HEADER_LENGTH)
-            print(username_header)
             if not len(username_header):
                 print('Connection closed by the server')
                 closing = True
@@ -97,7 +96,8 @@ def select_room(server_message):
             if not create_room():
                 return False
             if last_input == "BACK":
-                return True
+                server_message = receive_server_message()
+                continue
         running = start_chatroom_loop()
         if running:
             server_message = receive_server_message()
