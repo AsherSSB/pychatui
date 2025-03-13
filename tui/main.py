@@ -86,7 +86,6 @@ class RoomList(Screen):
         for i, option in enumerate(self.options):  # remove numbers
             index = option.find(" ")
             self.options[i] = option[index+1:]
-        print(self.options)
         for option in self.options:
             self.query_one("ListView").mount(ListItem(Label(option)))
 
@@ -94,6 +93,7 @@ class RoomList(Screen):
         choice = event.list_view.index - 1  # -1 since create new is -1
         self.app.tw.send_message(str(choice))
         if choice == -1:
+            self.app.tw.receive_server_message()
             self.app.push_screen("room_creation")
         else:
             self.app.tw.receive_server_message()  # clear buffer
@@ -129,8 +129,8 @@ class UsernameSelection(Screen):
             self.app.username = self.input.value
             self.app.push_screen("room_list")
         except Exception as e:
-            print(e)
-
+            print (e)
+ 
 
 class ServerConnect(Screen):
     def compose(self):
